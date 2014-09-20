@@ -31,21 +31,15 @@ node['vim']['users'].each do |user|
 
   execute "run-vundle-#{user}" do
     action :nothing
-    command "vim +BundleInstall +qa"
-    timeout 300
+    command "vim -c 'set shortmess=at' +BundleInstall +qa"
+    timeout 500
     user user
-  end
-
-  ruby_block "chown-vim-#{user}" do
-    action :nothing
-    block { FileUtils.chown_R user, user, "/home/#{user}/.vim" }
-    notifies :run, "execute[run-vundle-#{user}]"
   end
 
   git "/home/#{user}/.vim/bundle/Vundle.vim" do
     repository "git://github.com/gmarik/Vundle.vim.git"
     action :sync
-    notifies :run, "ruby_block[chown-vim-#{user}]"
+    notifies :run, "execute[run-vundle-#{user}]"
     user user
   end
 end
