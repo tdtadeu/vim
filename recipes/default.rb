@@ -40,13 +40,12 @@ node['vim']['users'].each do |user|
     action :nothing
     block { FileUtils.chown_R user, user, "/home/#{user}/.vim" }
     notifies :run, "execute[run-vundle-#{user}]"
-    user user
   end
 
   git "/home/#{user}/.vim/bundle/Vundle.vim" do
     repository "git://github.com/gmarik/Vundle.vim.git"
     action :sync
-    notifies :run, "execute[chown-vim-#{user}]"
+    notifies :run, "ruby_block[chown-vim-#{user}]"
     user user
   end
 end
