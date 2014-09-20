@@ -31,8 +31,8 @@ node['vim']['users'].each do |user|
 
   execute "run-vundle-#{user}" do
     action :nothing
-    command "vim +PluginInstall +qall"
-    timeout 600
+    command "vim +BundleInstall +qa"
+    timeout 300
     user user
   end
 
