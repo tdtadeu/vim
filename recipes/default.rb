@@ -29,18 +29,17 @@ node['vim']['users'].each do |user|
     user user
   end
 
-  bash "run-vundle-#{user}" do
+  execute "run-vundle-#{user}" do
     action :nothing
-    code "vim -c 'set shortmess=at' +BundleInstall +qall"
+    command "vim -c 'set shortmess=at' +PluginInstall +qall"
     timeout node['vim']['timeout']
-    group user
     user user
   end
 
   git "/home/#{user}/.vim/bundle/Vundle.vim" do
     repository "git://github.com/gmarik/Vundle.vim.git"
     action :sync
-    notifies :run, "bash[run-vundle-#{user}]"
+    notifies :run, "execute[run-vundle-#{user}]"
     user user
   end
 end
