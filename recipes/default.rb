@@ -1,4 +1,5 @@
 include_recipe "apt"
+include_recipe "git"
 
 package "vim" do
   options "--force-yes"
@@ -33,7 +34,9 @@ node['vim']['users'].each do |user|
     action :nothing
     command "vim -c 'set shortmess=at' +PluginInstall +qall"
     timeout node['vim']['timeout']
+    environment 'HOME' => "/home/#{user}"
     user user
+    only_if { File.exists?("/home/#{user}/.vim/bundle/Vundle.vim") }
   end
 
   git "/home/#{user}/.vim/bundle/Vundle.vim" do

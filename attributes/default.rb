@@ -1,2 +1,2 @@
 default['vim']['users'] = []
-default['vim']['timeout'] = 600
+default['vim']['timeout'] = 300
