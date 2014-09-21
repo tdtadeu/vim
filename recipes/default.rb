@@ -29,7 +29,7 @@ node['vim']['users'].each do |user|
     user user
   end
 
-  bash"run-vundle-#{user}" do
+  bash "run-vundle-#{user}" do
     action :nothing
     code "vim -c 'set shortmess=at' +BundleInstall +qall"
     timeout node['vim']['timeout']
