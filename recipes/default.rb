@@ -1,10 +1,10 @@
 include_recipe "apt"
 include_recipe "git"
 
-def setup
+def setup_vim(users)
   install_vim
 
-  node['vim']['users'].each do |user|
+  users.each do |user|
     download_vimrc(user)
 
     create_bundle_directory(user)
@@ -77,4 +77,6 @@ def run_plugin_install(user)
   end
 end
 
-setup
+users = node['vim']['users']
+
+setup_vim(users)
