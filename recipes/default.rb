@@ -1,11 +1,11 @@
 include_recipe "apt"
 include_recipe "git"
 
-def setup_vim(users)
+def setup_vim(users, gist)
   install_vim
 
   users.each do |user|
-    download_vimrc(user)
+    install_vimrc(user, gist)
 
     create_bundle_directory(user)
 
@@ -20,12 +20,22 @@ def install_vim
   end
 end
 
-def download_vimrc(user)
-  remote_file "Create .vimrc" do
-    path "/home/#{user}/.vimrc"
-    user user
-    source "#{node['vim']['gist']}"
-    not_if { File.exists?("/home/#{user}/.vimrc") }
+def install_vimrc(user, gist)
+  if gist && gist.length > 0
+    remote_file "Create .vimrc" do
+      path "/home/#{user}/.vimrc"
+      user user
+      source gist
+      not_if { File.exists?("/home/#{user}/.vimrc") }
+    end
+  else
+    template "/home/#{user}/.vimrc" do
+      source "vimrc.erb"
+      owner user
+      mode "644"
+      action :create_if_missing
+      not_if { File.exists?("/home/#{user}/.vimrc") }
+    end
   end
 end
 
@@ -70,13 +80,14 @@ def run_plugin_install(user)
   execute "run-vundle-#{user}" do
     action :run
     command "vim -c 'set shortmess=at' +PluginInstall +qall"
-    timeout node['vim']['timeout']
+    timeout node[:vim][:timeout]
     environment 'HOME' => "/home/#{user}"
     user user
     only_if { File.exists?("/home/#{user}/.vim/bundle/Vundle.vim") }
   end
 end
 
-users = node['vim']['users']
+users = node[:vim][:users]
+gist = node[:vim][:gist]
 
-setup_vim(users)
+setup_vim(users, gist)
